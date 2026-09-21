@@ -31,16 +31,20 @@
 
 .filter {
   padding: 10px;
+  display: flex;
+  justify-content: space-between;
 }
 
-.res-container {
+.res-container,
+.shimmer-wrapper {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-evenly;
   border-radius: 10px;
 }
 
-.res-card {
+.res-card,
+.shimmer-card {
   width: 200px;
   height: 450px;
   padding: 5px;
