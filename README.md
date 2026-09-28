@@ -41,3 +41,11 @@
   *     - Normal JS Utility functions
   *         - useState() => Superpowerful React Variables
   *         - useEffect()
+
+  */
+
+ /*
+  *   # 2 types of routing
+  *     - Client-side Routing Ex: <Link to="">
+  *     - Server-side Routing Ex: <a href="">
+  */

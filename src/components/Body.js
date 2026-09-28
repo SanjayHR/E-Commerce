@@ -3,11 +3,12 @@ import { resList } from "../utils/mockData.js";
 import { useState } from "react";
 import { useEffect } from "react";
 import Shimmer from "./Shimmer.js";
+import { Link } from "react-router-dom";
 
 const Body = () => {
-  // useState hook to create a state variable listOfRestaurants and a function setlistOfRestaurants to update it. The initial value is an empty array.
-  const [listOfRestaurants, setlistOfRestaurants] = useState([]);
-  const [filteredRestaurants, setFilteredRestaurants] = useState([]);
+  // useState hook to create a state variable listOfRestaurants and a function setlistOfRestaurants to update it. The initial value is the local mock data.
+  const [listOfRestaurants, setlistOfRestaurants] = useState(resList);
+  const [filteredRestaurants, setFilteredRestaurants] = useState(resList);
 
   const [searchText, setSearchText] = useState("");
 
@@ -17,23 +18,27 @@ const Body = () => {
   }, []);
 
   const fetchData = async () => {
-    // Fetch data from the Swiggy API using the fetch function
-    const data = await fetch(
-      "https://www.swiggy.com/dapi/restaurants/list/v5?lat=12.9351929&lng=77.62448069999999&page_type=DESKTOP_WEB_LISTING",
-    );
+    try {
+      // Fetch data from the Swiggy API using the fetch function
+      const data = await fetch(
+        "https://www.swiggy.com/dapi/restaurants/list/v5?lat=12.9351929&lng=77.62448069999999&page_type=DESKTOP_WEB_LISTING",
+      );
 
-    // Convert the response to JSON format
-    const json = await data.json();
+      // Convert the response to JSON format
+      const json = await data.json();
 
-    // Optional Chaining - ?. is used to avoid errors if any property in the chain is undefined or null
-    setlistOfRestaurants(
-      json?.data?.cards[1]?.card?.card?.gridElements?.infoWithStyle
-        ?.restaurants,
-    );
-    setFilteredRestaurants(
-      json?.data?.cards[1]?.card?.card?.gridElements?.infoWithStyle
-        ?.restaurants,
-    );
+      const restaurants =
+        json?.data?.cards[1]?.card?.card?.gridElements?.infoWithStyle
+          ?.restaurants ?? resList;
+
+      // Optional Chaining - ?. is used to avoid errors if any property in the chain is undefined or null
+      setlistOfRestaurants(restaurants);
+      setFilteredRestaurants(restaurants);
+    } catch (error) {
+      console.warn("Swiggy API fetch failed, using local mock data instead.");
+      setlistOfRestaurants(resList);
+      setFilteredRestaurants(resList);
+    }
   };
 
   return listOfRestaurants?.length === 0 ? (
@@ -76,10 +81,9 @@ const Body = () => {
       </div>
       <div className="res-container">
         {filteredRestaurants.map((restaurant) => (
-          <RestaurantCard
-            key={restaurant?.info?.id}
-            resData={restaurant?.info}
-          />
+          <Link to={`/restaurant/${restaurant?.info?.id}`} key={restaurant?.info?.id}>
+            <RestaurantCard resData={restaurant?.info} />
+          </Link>
         ))}
       </div>
     </div>
