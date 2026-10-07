@@ -2,7 +2,7 @@
 // const root = ReactDOM.createRoot(document.getElementById('root'));
 // root.render(heading);
 
-import React from "react";
+import React, { lazy } from "react";
 import ReactDOM from "react-dom/client";
 import Header from "./components/Header.js";
 import Body from "./components/Body.js";
@@ -20,6 +20,8 @@ const AppLayout = () => {
     </div>
   );
 };
+
+const Grocery = lazy(() => import("./components/Grocery.js"));
 
 const appRouter = createBrowserRouter([
   {
@@ -39,9 +41,13 @@ const appRouter = createBrowserRouter([
         element: <Contact />,
       },
       {
-        path:"/restaurant/:resId",
-        element:<RestaurantMenu />
-      }
+        path: "/grocery",
+        element: <Grocery />,
+      },
+      {
+        path: "/restaurant/:resId",
+        element: <RestaurantMenu />,
+      },
     ],
     errorElement: <Error />,
   },
