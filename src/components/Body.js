@@ -1,15 +1,15 @@
 import RestaurantCard from "./RestaurantCard.js";
-import { resList } from "../utils/mockData.js";
-import { useState } from "react";
-import { useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import Shimmer from "./Shimmer.js";
 import { Link } from "react-router-dom";
 import useOnlineStatus from "../utils/useOnlineStatus.js";
+import { Restaurant_API_URL } from "../utils/constants.js";
+import UserContext from "../utils/userContext.js";
 
 const Body = () => {
   // useState hook to create a state variable listOfRestaurants and a function setlistOfRestaurants to update it. The initial value is the local mock data.
-  const [listOfRestaurants, setlistOfRestaurants] = useState(resList);
-  const [filteredRestaurants, setFilteredRestaurants] = useState(resList);
+  const [listOfRestaurants, setlistOfRestaurants] = useState(null);
+  const [filteredRestaurants, setFilteredRestaurants] = useState(null);
 
   const [searchText, setSearchText] = useState("");
 
@@ -21,9 +21,7 @@ const Body = () => {
   const fetchData = async () => {
     try {
       // Fetch data from the Swiggy API using the fetch function
-      const data = await fetch(
-        "https://www.swiggy.com/dapi/restaurants/list/v5?lat=12.9351929&lng=77.62448069999999&page_type=DESKTOP_WEB_LISTING",
-      );
+      const data = await fetch(Restaurant_API_URL);
 
       // Convert the response to JSON format
       const json = await data.json();
@@ -51,6 +49,8 @@ const Body = () => {
       </h1>
     );
   }
+
+  const { loggedInUser, setUserName } = useContext(UserContext);
 
   return listOfRestaurants?.length === 0 ? (
     <Shimmer />
@@ -80,11 +80,12 @@ const Body = () => {
             Search
           </button>
         </div>
+
         <div className="search m-4 p-4">
           <button
             className="px-4 py-2 bg-green-500 text-white rounded-md m-2"
             onClick={() => {
-              const filteredList = listOfRestaurants.filter(
+              const filteredList = listOfRestaurants?.filter(
                 (res) => res?.info?.avgRating > 4.2,
               );
               setFilteredRestaurants(filteredList);
@@ -93,9 +94,21 @@ const Body = () => {
             Top Rated listOfRestaurants
           </button>
         </div>
+
+        <div className="user-name m-4 p-4">
+          <label className="font-bold text-lg m-4 p-4">User Name:</label>
+          <input
+            type="text"
+            className="border border-gray-300 rounded-md p-2"
+            placeholder="Enter your name"
+            value={loggedInUser}
+            onChange={(e) => setUserName(e.target.value)}
+          />
+        </div>
       </div>
+
       <div className="res-container flex flex-wrap">
-        {filteredRestaurants.map((restaurant) => (
+        {filteredRestaurants?.map((restaurant) => (
           <Link
             to={`/restaurant/${restaurant?.info?.id}`}
             key={restaurant?.info?.id}
